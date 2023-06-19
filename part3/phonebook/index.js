@@ -16,6 +16,11 @@ app.use(
 )
 
 app.use(express.json())
+/*to make express show static content,
+  whenever express gets an HTTP GET request it will first check if the build directory contains a file corresponding to the request's address.
+   If a correct file is found, express will return it.
+*/
+app.use(express.static('build'))
 
 let persons = [
     {
@@ -81,6 +86,7 @@ app.post('/api/persons', (request, response) => {
             error: "Name or Number are missing."
         })
     }
+
     /**
      * We use some() to iterate through the persons array and check if any person's name
      * matches the one provided in the request body.
@@ -93,8 +99,6 @@ app.post('/api/persons', (request, response) => {
             error: "Name already exists"
         })
     }
-
-
     const person = {
         name: body.name,
         number: body.number,
