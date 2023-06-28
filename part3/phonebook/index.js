@@ -1,26 +1,32 @@
 //importing express
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 
-const morgan = require('morgan')
+//dotenv must be imported before the person model
+require("dotenv").config();
+const Person = require('./models/person');
+const morgan = require('morgan');
+const cors = require('cors');
+
 
 //To show data sent on http post req we need to install npm morgan morgan-body 
-const morganBody = require('morgan-body')
+const morganBody = require('morgan-body');
+const person = require('./models/person');
 //enable logging of req body
-morganBody(app)
+morganBody(app);
 
 //When making req we use tiny format to display message logs
 //morgan middleware needs to be defined before defining routes
 app.use(
-    morgan('tiny', {stream: process.stdout})
+    morgan('tiny', { stream: process.stdout })
 )
-
-app.use(express.json())
+app.use(cors());
 /*to make express show static content,
   whenever express gets an HTTP GET request it will first check if the build directory contains a file corresponding to the request's address.
    If a correct file is found, express will return it.
 */
-app.use(express.static('build'))
+app.use(express.static('build'));
+app.use(express.json());
 
 let persons = [
     {
@@ -43,46 +49,60 @@ let persons = [
         name: "Mary Poppendieck",
         number: "39-23-6423122"
     }
-]
+];
 
 //(1)The route defines an event handler that handles HTTP GET requests made to the notes path of the application
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
-})
+    //Person.find fetches all the documents from the 'Person' collection in the MongoDB 
+    Person.find({})
+        .then(persons => {
+            response.json(persons);
+        })
+});
 
 // fetching a single resource
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
+    Person.findById(request.params.id)
+        .then((person) => {
+            //if the id provided to the url doesnt exist respond with 404 
+            if (person) {
+                response.json(person);
+            } else {
+                response.status(404).end();
+            }
+        })
+        //if the id is not wrote in the correct formmat respond with 400
+        .catch((error) => {
+            console.log(error);
+            response.status(400).send({ error: 'malformatted id' })
 
-    // if person does not exist responde with status code 404 not found
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
-})
+        })
+});
 
-app.get('/info', (request, response) => {
-    response.send(
-        `<p>Phone book has info for ${persons.length} people</p><p>${new Date()}></p>`
-    )
-})
+app.get('/info', (request, response, next) => {
+    Person.find({})
+        .then((people) => {
+            response.send(
+                `<p>Phone book has info for ${persons.length} people</p><p>${new Date()}></p>`
+            )
+        })
+        .catch((error) => next(error))
+});
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello</h1>')
-})
+});
 
 const generateId = () => {
-    const randomId = persons.length > 0 ? Math.random(...persons.map(n => n.id)) : 0
+    const randomId = persons.length > 0 ? Math.random(...persons.map(n => n.id)) : 0;
     return randomId * 1000000;
-}
+};
 
-app.post('/api/persons', (request, response) => {
-    const body = request.body
+app.post('/api/persons', (request, response, next) => {
+    const body = request.body;
 
     if (!body.name || !body.number) {
-        return response.status(404).json({
+        return response.status(400).json({
             error: "Name or Number are missing."
         })
     }
@@ -99,23 +119,71 @@ app.post('/api/persons', (request, response) => {
             error: "Name already exists"
         })
     }
+    // const person = {
+    //     name: body.name,
+    //     number: body.number,
+    //     id: generateId(),
+    // };
+    // persons = persons.concat(person);
+    // response.json(person);
+
+    const person = new Person({
+        name: body.name,
+        number: body.number
+    })
+
+    person
+        .save()
+        .then(savedPerson => {
+            response.json(savedPerson)
+        })
+        .catch((error) => next(error))
+});
+
+app.delete('/api/persons/:id', (request, response, next) => {
+    // const id = Number(request.params.id);
+    // const delPerson = persons.filter(person => person.id !== id);
+    // response.json(delPerson);
+    // response.status(204).end();
+    Person.findByIdAndRemove(request.params.id)
+        .then(result => {
+            response.status(204).end()
+            console.log(result)
+        })
+        .catch((error) => next(error))
+});
+app.put('/api/persons/:id', (request, response, next) => {
+
+    const body = request.body
     const person = {
         name: body.name,
-        number: body.number,
-        id: generateId(),
+        number: body.number
     }
-    persons = persons.concat(person)
-    response.json(person)
+    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+        .then(updatedPerson => {
+            response.json(updatedPerson)
+        })
+        .catch((error) => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const delPerson = persons.filter(person => person.id !== id)
-    response.json(delPerson)
-    response.status(204).end()
-})
+// handler of requests with unknown endpoint
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: "unknown endpoint" });
+};
+app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 3001
-app.listen(PORT, ()=>{
-console.log(`Server running on port ${PORT}`)
-})
+//The error handler checks if the error is a CastError exception,which is an error was caused by an invalid object id for Mongo
+const errorHandler = (error, request, response, next) => {
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === "ValidationError") {
+        return response.status(400).json({ error: error.message })
+    }
+    next(error);
+}
+app.use(errorHandler);
+
+const PORT = process.env.PORT;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+});
