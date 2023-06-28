@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import PersonForm from "./components/PersonForm";
 import Filter from "./components/Filter";
-import axios from 'axios';
 import personService from './services/persons';
 import Content from './components/Content'
 import Notification from './components/Notification'
@@ -55,7 +54,7 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-   
+
     personService
       .create(newPerson)
       .then(returnedPerson => {
@@ -64,7 +63,16 @@ const App = () => {
         setNewNumber('')
         setMessage(`Added ${newPerson.name} to phonebook`)
       })
-      
+      .catch((error) => {
+        setMessage(error.response.data.error)
+
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+        console.log(error.response.data.error)
+
+      })
+
 
 
     // axios
