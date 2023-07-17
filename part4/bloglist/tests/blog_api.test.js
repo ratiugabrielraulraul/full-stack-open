@@ -30,7 +30,7 @@ test('id property instead of_id', async () => {
   const response = await api.get('/api/blogs')
   const id = response.body.map(blog => blog.id)
 
-  for(const id of id){
+  for (const id of id) {
     expect(id).toBeDefined();
   }
 
@@ -86,8 +86,9 @@ test('blog without author is not added', async () => {
 
   const blogsAtEnd = await helper.blogsInDb()
   expect(blogsAtEnd).toHaveLength(helper.intialBlogs.length)
-
 })
+
+
 
 //afterAll jest func
 afterAll(async () => {
