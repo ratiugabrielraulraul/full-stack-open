@@ -1,11 +1,14 @@
 const supertest = require('supertest');
+const bcrypt = require('bcrypt')
 const mongoose = require('mongoose');
 const helper = require('./test_helper');
 const app = require('../app');
+const jwt = require("jsonwebtoken");
 const { json, application } = require('express');
-
 const api = supertest(app);
-const Blog = require('../models/blog')
+const config = require("../utils/config");
+const Blog = require('../models/blog');
+const User = require('../models/user');
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -51,22 +54,40 @@ describe("when there is  initially some blogs saved", () => {
   })
 })
 describe("viewing a specific note", () => {
+  let token = null;
+  beforeAll(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash("12345", 10);
+    const user = await new User({ username: "name", passwordHash }).save();
+
+    const userForToken = { username: "name", id: user.id };
+    return (token = jwt.sign(userForToken, config.SECRET));
+  });
+
+
   test('a valid blog can be added', async () => {
     const newBlog = {
-      title: "idk",
-      author: "Author",
-      url: "https://example.com",
-      likes: 10
+      title: 'Avengers',
+      author: 'Unknown',
+      url: 'https://example.com',
+      likes: 43,
+
     }
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       // in case we forgot to respond with a status 201 in blogsRouter post the test fails with 200(ok)
       .expect(201)
       .expect("Content-Type", /application\/json/)
 
+
+
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.intialBlogs.length + 1)
+
+
   })
 
   // test blog with missing field 

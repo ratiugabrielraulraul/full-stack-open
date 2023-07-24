@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hdGhpYXMiLCJpZCI6IjY0YmUzZGEwMmQ1MDhjMDE3YTM1ZWEyMSIsImlhdCI6MTY5MDE5MzQyMCwiZXhwIjoxNjkwMTk3MDIwfQ.UuDOvtVW0rHfj5ypONIm8VDuBm8cG6xdVFAFgWyUkjE
 
 {
-    "title": "Cross fitee",
-    "author": "Herald Butleeer",
-    "url": "https://example.com",
-    "likes": 5
-
-}
+  "title": "Avengers",
+  "author": "Unknown",
+  "url": "https://example.com",
+  "likes": 43
+}   
