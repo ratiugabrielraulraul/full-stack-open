@@ -1,0 +1,150 @@
+* {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  /* Align content to the top */
+  min-height: 100vh;
+  /* min-height to ensure the content is centered even with small content */
+  background-color: #f0f0f0;
+  /* Add a background color to the body */
+}
+
+#mainTitle {
+  text-align: center;
+  font-weight: bold;
+
+}
+
+.formControl {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+  /* Center the content inside the formControl */
+}
+
+/* Add a margin between the login form and the blogs */
+#root {
+  margin-top: 20px;
+}
+
+/* Add some spacing between individual blogs */
+/* .blog {
+  margin-bottom: 10px;
+  border-bottom: #4CAF50;
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  border-style: solid;
+} */
+
+.formControl {
+  width: 100%;
+  border-radius: 5px;
+  padding: 1rem;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+#userLogged {
+  font-weight: bold;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #fff;
+  /* Text color */
+  background-color: #4CAF50;
+  padding: 8px 12px;
+  border-radius: 4px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  animation: fadeInOut 2s ease-in-out;
+}
+
+/* Define fadeInOut animation */
+@keyframes fadeInOut {
+
+  0%,
+  100% {
+    opacity: 0;
+    /* Start and end with opacity 0 (invisible) */
+  }
+
+  50% {
+    opacity: 1;
+    /* Middle of the animation with opacity 1 (visible) */
+  }
+}
+
+#submitButton,
+#logout,
+#createBlogButton {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.blog {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid #4CAF50;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 4.5%;
+}
+
+.blog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.hide-show-btn,
+#delete-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 7px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.blogs {
+  margin-left: 20px;
+
+}
+
+@media screen and (max-width: 768px) {
+  .formControl {
+    width: 80%;
+  }
+
+  .blogs {
+    margin-left: 0;
+  }
+}
