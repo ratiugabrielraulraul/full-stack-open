@@ -1,6 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import { fireEvent, render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event"
 import Blog from "./Blog";
 
 describe("Blog tests block", () => {
@@ -16,6 +17,8 @@ describe("Blog tests block", () => {
     };
 
     let component;
+    const mockHandler = jest.fn();
+
 
     beforeEach(() => {
         component = render(<Blog key={blog.id} blog={blog} />)
@@ -49,6 +52,16 @@ describe("Blog tests block", () => {
 
             const blogDetails = component.container.querySelector(".blog-details");
             expect(blogDetails).toBeInTheDocument();
+        }),
+
+        test("ensure that if like button is clicked twice, the event handler is called twice", () => {
+
+
+            const button = component.container.getByText("like");
+            fireEvent.click(button);
+            fireEvent.click(button);
+
+            expect(mockHandler.mock.calls).toHaveLength(2);
+
         })
-    // to continue 
 })
