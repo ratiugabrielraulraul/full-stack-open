@@ -64,4 +64,4 @@ describe("Blog tests block", () => {
             expect(mockHandler.mock.calls).toHaveLength(2);
 
         })
-})
+});
