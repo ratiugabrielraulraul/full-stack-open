@@ -1,3 +1,7 @@
+import { createSlice } from "@reduxjs/toolkit";
+
+
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -7,60 +11,39 @@ const anecdotesAtStart = [
   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
 ]
 
-const getId = () => (100000 * Math.random()).toFixed(0)
+// Helper function to generate unique IDs
+const getId = () => (100000 * Math.random()).toFixed(0);
 
-const asObject = (anecdote) => {
-  return {
-    content: anecdote,
-    id: getId(),
-    votes: 0
-  }
-}
+// Define initial state using the array of anecdotes
+const initialState = anecdotesAtStart.map((anecdote) => ({
+  content: anecdote,
+  id: getId(),
+  votes: 0,
+}));
 
-//Define the Action Types
-const VOTE = 'VOTE'
-const NEW_ANECDOTE = 'NEW_ANECDOTE'
-
-//Create an Action Creator for Voting and Adding New Anecdote
-export const createAnecdote = (content) => {
-  return {
-    type: NEW_ANECDOTE,
-    payload: {
-      content,
-      id: getId(),
-      votes: 0
-    }
-  }
-}
-export const voteAnecdote = (id) => {
-  return {
-    type: VOTE,
-    payload: { id }
-  }
-}
-
-const initialState = anecdotesAtStart.map(asObject)
-
-
-// Update the Reducer for Voting
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'VOTE':
-      const id = action.payload.id
-      const anecdoteToVote = state.find(anecdote => anecdote.id === id)
-      const updatedAnecdote = {
-        ...anecdoteToVote,
-        votes: anecdoteToVote.votes + 1
+// Create a slice using createSlice
+const anecdoteSlice = createSlice({
+  name: 'anecdotes',
+  initialState, // Use the initial state
+  reducers: {
+    createAnecdote: (state, action) => {
+      // Payload contains the content for the new anecdote
+      const { content } = action.payload;
+      state.push({
+        content,
+        id: getId(), // Generate a unique ID
+        votes: 0,
+      });
+    },
+    voteAnecdote: (state, action) => {
+      const id = action.payload.id;
+      const anecdote = state.find((a) => a.id === id);
+      if (anecdote) {
+        anecdote.votes += 1;
       }
-      return state.map(anecdote =>
-        anecdote.id === id ? updatedAnecdote : anecdote
-      )
-    case 'NEW_ANECDOTE':
-      return [...state, action.payload]
-    default:
-      return state
-  }
-}
+    },
+  },
+});
 
-
-export default reducer
+export const { createAnecdote, voteAnecdote } = anecdoteSlice.actions;
+export default anecdoteSlice.reducer;
