@@ -12,7 +12,7 @@ const anecdotesAtStart = [
 ]
 
 // Helper function to generate unique IDs
-const getId = () => (100000 * Math.random()).toFixed(0);
+export const getId = () => (100000 * Math.random()).toFixed(0);
 
 // Define initial state using the array of anecdotes
 const initialState = anecdotesAtStart.map((anecdote) => ({
@@ -23,16 +23,15 @@ const initialState = anecdotesAtStart.map((anecdote) => ({
 
 // Create a slice using createSlice
 const anecdoteSlice = createSlice({
-  name: 'anecdotes',
-  initialState, // Use the initial state
+  name: "anecdotes",
+  initialState,
   reducers: {
     createAnecdote: (state, action) => {
-      // Payload contains the content for the new anecdote
-      const { content } = action.payload;
+      const { content, id, votes } = action.payload;
       state.push({
         content,
-        id: getId(), // Generate a unique ID
-        votes: 0,
+        id, // Use the provided ID
+        votes, // Use the provided votes
       });
     },
     voteAnecdote: (state, action) => {
@@ -44,6 +43,5 @@ const anecdoteSlice = createSlice({
     },
   },
 });
-
 export const { createAnecdote, voteAnecdote } = anecdoteSlice.actions;
 export default anecdoteSlice.reducer;
