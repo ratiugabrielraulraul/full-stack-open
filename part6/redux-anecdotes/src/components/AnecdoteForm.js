@@ -1,9 +1,9 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { createAnecdote } from "../reducers/anecdoteReducer";
 import { appStyles, headerStyles, inputStyles, buttonStyles } from "../styles"
 import { setNotification, clearNotification } from "../reducers/notificationReducer";
-import anecdoteService from '../services/anecdotes'
+import { createAnecdotes } from '../reducers/anecdoteReducer';
+
 const AnecdoteForm = () => {
 
     const dispatch = useDispatch();
@@ -12,9 +12,8 @@ const AnecdoteForm = () => {
         event.preventDefault();
         const content = event.target.anecdote.value;
         event.target.anecdote.value = "";
-        const newAnecdote = await anecdoteService.create(content)
         // Dispatch the createAnecdote action with the content and other required data
-        dispatch(createAnecdote(newAnecdote));
+        dispatch(createAnecdotes(content));
 
         dispatch(setNotification(`You added a new anecdote: "${content}"`)); // Dispatch a notification
         setTimeout(() => {
@@ -22,8 +21,6 @@ const AnecdoteForm = () => {
             dispatch(clearNotification()); // Clear the notification after some time
         }, 5000);
     }
-
-
 
     return (
         <div style={appStyles}>
