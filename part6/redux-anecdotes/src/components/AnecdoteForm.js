@@ -1,8 +1,8 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { appStyles, headerStyles, inputStyles, buttonStyles } from "../styles"
-import { setNotification, clearNotification } from "../reducers/notificationReducer";
 import { createAnecdotes } from '../reducers/anecdoteReducer';
+import { setTimedNotification } from '../reducers/notificationReducer';
 
 const AnecdoteForm = () => {
 
@@ -15,11 +15,7 @@ const AnecdoteForm = () => {
         // Dispatch the createAnecdote action with the content and other required data
         dispatch(createAnecdotes(content));
 
-        dispatch(setNotification(`You added a new anecdote: "${content}"`)); // Dispatch a notification
-        setTimeout(() => {
-            console.log("Clearing Notification...");
-            dispatch(clearNotification()); // Clear the notification after some time
-        }, 5000);
+        dispatch(setTimedNotification(`You added a new anecdote: "${content}"`, 2)); // Dispatch a notification
     }
 
     return (
