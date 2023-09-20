@@ -9,6 +9,7 @@ import Anecdote from "./components/Anecdote";
 import Notification from "./components/Notification";
 
 
+
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
     {
@@ -43,8 +44,6 @@ const App = () => {
     navigate("/");
 
   };
-
-
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
 
