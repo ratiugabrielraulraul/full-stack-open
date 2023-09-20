@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useMatch } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useMatch, useNavigate } from "react-router-dom";
 import About from "./components/About";
 import AnecdoteList from "./components/AnecdoteList";
 import CreateNew from "./components/CreateNew";
 import Footer from "./components/Footer";
 import Menu from "./components/Menu";
 import Anecdote from "./components/Anecdote";
+import Notification from "./components/Notification";
 
 
 const App = () => {
@@ -27,11 +28,23 @@ const App = () => {
   ]);
 
   const [notification, setNotification] = useState("");
+  const navigate = useNavigate();
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+
+    setNotification(`A new anecdote "${anecdote.content}" created!`);
+
+    setTimeout(() => {
+      setNotification("");
+    }, 5000);
+
+    navigate("/");
+
   };
+
+
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
 
@@ -54,6 +67,7 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
+      <Notification message={notification} />
       <Menu />
       <Routes>
         <Route
