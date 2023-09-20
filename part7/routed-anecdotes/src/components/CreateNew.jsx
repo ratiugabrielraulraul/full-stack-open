@@ -1,10 +1,21 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useField } from "../hooks/index";
 
 const CreateNew = (props) => {
-    const content = useField('text');
-    const author = useField('text');
-    const info = useField('text');
+    const { reset: resetContent, ...content } = useField("text");
+    const { reset: resetAuthor, ...author } = useField("text");
+    const { reset: resetInfo, ...info } = useField("text");
+
+    const contentRef = useRef(null);
+
+
+
+    const handleReset = (e) => {
+        resetContent()
+        resetAuthor()
+        resetInfo()
+        contentRef.current.focus()
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -14,7 +25,10 @@ const CreateNew = (props) => {
             info: info.value,
             votes: 0,
         });
+        handleReset();
+
     };
+
 
     return (
         <div>
@@ -22,7 +36,7 @@ const CreateNew = (props) => {
             <form onSubmit={handleSubmit}>
                 <div>
                     content
-                    <input {...content}
+                    <input {...content} ref={contentRef}
                     />
                 </div>
                 <div>
@@ -36,6 +50,7 @@ const CreateNew = (props) => {
                     />
                 </div>
                 <button>create</button>
+                <button type="button" onClick={handleReset}>reset</button>
             </form>
         </div>
     );
